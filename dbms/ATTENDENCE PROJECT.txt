@@ -1,0 +1,381 @@
+1.COURSE TABLE:
+____________________________________
+CREATE TABLE IF NOT EXISTS COURSE
+(
+COURSE_ID INT NOT NULL,
+COURSE_NAME VARCHAR(50) NOT NULL,
+TEACHER_ID INT NOT NULL,
+LTP_STRUCTURE INT ,
+PRIMARY KEY(COURSE_ID),
+CONSTRAINT FK_1 FOREIGN KEY(TEACHER_ID) REFERENCES TEACHER(TEACHER_ID)
+);
+
+
+2.TEACHER TABLE:
+___________________________________
+CREATE TABLE IF NOT EXISTS TEACHER
+(
+TEACHER_ID INT NOT NULL,
+TEACHER_NAME VARCHAR(50),
+TEACHER_MAIL VARCHAR(50),
+SECTION_NO INT,
+PRIMARY KEY(TEACHER_ID),
+CONSTRAINT FK_7 FOREIGN KEY(SECTION_NO) REFERENCES SECTION(SEC_NO),
+);
+
+
+3.ATTENDENCE TABLE:
+____________________________________
+CREATE TABLE IF NOT EXISTS ATTENDENCE
+(
+ATTENDENCE_ID INT,
+STU_ID INT ,
+SEMESTER INT,
+SESSION_NO INT,
+SECTION_NO INT,
+STATUS VARCHAR(50),
+C_CODE INT,
+DATE VARCHAR(50),
+PRIMARY KEY(ATTENDENCE_ID),
+CONSTRAINT FK_2 FOREIGN KEY(STU_ID) REFERENCE STUDENT(STU_ID),
+CONSTRAINT FK_3 FOREIGN KEY(SECTION_NO) REFERENCES SECTION(SEC_NO),
+CONSTRAINT FK_4 FOREIGN KEY(C_CODE) REFERENCES COURSE(COURSE_ID)
+);
+
+4.STUDENT TABLE:
+________________________________________
+CREATE TABLE IF NOT EXISTS STUDENT 
+(
+STU_ID INT,
+STU_NAME VARCHAR(50) NOT NULL,
+STU_MAIL VARCHAR(50) NOT NULL,
+YEAR INT,
+SEC_NO INT,
+COURSE_ID INT
+PRIMARY KEY(STU_ID),
+CONSTRAINT FK_5 FOREIGN KEY(SEC_NO) REFERENCE SECTION(SEC_NO),
+);
+
+5.SECTION TABLE:
+__________________________________________
+CREATE TABLE IF NOT EXISTS SECTION
+(
+SEC_NO INT,
+SEC_SLOT_NO,
+ROOM_NO INT,
+PRIMARY KEY(SEC_NO),
+CONSTRAINT FK_6 FOREIGN KEY(ROOM_NO) REFERENCES ROOM(ROOM_NO)
+);
+
+6.ROOM TABLE:
+__________________________________________
+CREATE TABLE IF NOT EXISTS ROOM
+(
+ROOM_NO INT,
+FLOOR_NO INT,
+BLOCK_NAME VARCHAR(50),
+PRIMARY KEY(ROOM_NO),
+);
+
+7.STUDENT_COARSE TABLE:
+__________________________________________
+CREATE TABLE IF NOT EXISTS STU_COURSE
+(
+SC_ID INT,
+STU_ID INT,
+COURSE_ID INT,
+PRIMARY KEY(SC_ID),
+CONSTRAINT FK_18 FOREIGN KEY(STU_ID) REFERENCES STUDENT(STU_ID),
+CONSTRAINT FK_19 FOREIGN KEY(COURSE_ID) REFERENCES COURSE(C_CODE),
+);
+
+
+
+INSERTIONS INTO THE TABLES:
+___________________________________________
+
+COURSE TABLE INSERTION:
+___________________________________________
+
+INSERT INTO COURSE VALUES ( 152001,'DBMS',3333,222);
+INSERT INTO COURSE VALUES ( 152002,'CN',4444,202);
+INSERT INTO COURSE VALUES ( 152003,'SA',3131,200);
+INSERT INTO COURSE VALUES ( 152004,'OS',2121,202);
+INSERT INTO COURSE VALUES ( 152005,'PS',4141,200);
+____________________________________________
+
+STUDENT TABLE INSERTION:
+____________________________________________
+
+INSERT INTO STUDENT VALUES( 150030338,'JPR','JP@GMAIL',2,1);
+INSERT INTO STUDENT VALUES( 150030337,'JVSR','JVSR@GMAIL',2,2);
+INSERT INTO STUDENT VALUES( 150030341,'JNC','JNC@GMAIL',2,7);
+INSERT INTO STUDENT VALUES(150030333,'KVP','KVP@GMAIL',2,1);
+INSERT INTO STUDENT VALUES(150030336,'K.AVI','K.AVI@GMAIL',2,1);
+____________________________________________
+
+SECTION TABLE:
+____________________________________________
+
+INSERT INTO SECTION VALUES(1,1,407);
+INSERT INTO SECTION VALUES(2,1,408);
+INSERT INTO SECTION VALUES(3,2,409);
+INSERT INTO SECTION VALUES(4,2,410);
+INSERT INTO SECTION VALUES(5,2,411);
+_____________________________________________
+
+ROOM TABLE:
+______________________________________________
+
+INSERT INTO ROOM VALUES(407,4,'C');
+INSERT INTO ROOM VALUES(408,4,'C');
+INSERT INTO ROOM VALUES(409,4,'C');
+INSERT INTO ROOM VALUES(410,4,'C');
+INSERT INTO ROOM VALUES(411,4,'C');
+____________________________________________
+
+TEACHER TABLE:
+____________________________________________
+
+INSERT INTO TEACHER VALUES(3333,'V.HARI KIRAN','VH18@GMAIL',1);
+INSERT INTO TEACHER VALUES(4444,'PRASHANTH','PRASH@GMAIL',1);
+INSERT INTO TEACHER VALUES(3131,'R.SEHAR','RS18@GMAIL',1);
+INSERT INTO TEACHER VALUES(2121,'K.THIRUPATHI RAO','KTR@GMAIL',1);
+INSERT INTO TEACHER VALUES(4141,'RAJYA LAXMI','RL@GMAIL',1);
+____________________________________________
+
+ATTENDENCE TABLE:
+_____________________________________________
+
+INSERT INTO ATTENDENCE VALUES(1,150030338,4,1,1,'P',152001,'26-03-2017');
+INSERT INTO ATTENDENCE VALUES(2,150030337,4,1,2,'P',152001,'26-03-2017');
+INSERT INTO ATTENDENCE VALUES(3,150030341,4,1,7,'P',152001,'26-03-2017');
+INSERT INTO ATTENDENCE VALUES(4,150030336,4,1,1,'P',152002,'27-03-2017');
+INSERT INTO ATTENDENCE VALUES(5,150030333,4,1,1,'P',152002,'27-03-2017');
+_____________________________________________
+
+STU_COU TABLE:
+_____________________________________________
+
+INSERT INTO STU_COURSE VALUES(1,150030338,152001);
+INSERT INTO STU_COURSE VALUES(2,150030338,152002);
+INSERT INTO STU_COURSE VALUES(3,150030338,152003);
+INSERT INTO STU_COURSE VALUES(4,150030338,152004);
+INSERT INTO STU_COURSE VALUES(5,150030338,152005);
+______________________________________________
+
+QUERIES RELATED TO PROJECT:
+______________________________________________
+
+1.DISPLAY THE STUDENT INFORMATION  BEING TAUGHT BY 'V.HARI KIRAN'?
+
+ANS:
+
+mysql> SELECT S.STU_ID,S.STU_NAME
+    -> FROM STUDENT S, SECTION SC, TEACHER T
+    -> WHERE S.SEC_NO =SC.SEC_NO AND T.SECTION_NO=SC.SEC_NO AND T.TEACHER_NAME='V.HARI KIRAN';
++-----------+----------+
+| STU_ID    | STU_NAME |
++-----------+----------+
+| 150030333 | KVP      |
+| 150030336 | K.AVI    |
+| 150030338 | JPR      |
++-----------+----------+
+
+
+
+
+
+
+2.HOW MANY STUDENTS ARE PRESENT ON THE DATE OF '27-03-2017'?
+ANS:
+mysql> SELECT COUNT(S.STU_ID)
+    -> FROM ATTENDENCE S
+    -> WHERE S.STATUS='P' AND S.DATE='27-03-2017';
++-----------------+
+| COUNT(S.STU_ID) |
++-----------------+
+|               2 |
++-----------------+
+1 row in set (0.33 sec)
+
+
+
+
+
+
+
+3.DISPLAY THE STUDENT ATTENDENCE STATUS OF ID 150030338 ON '26-03-2017'?
+ANS:
+mysql> SELECT A.STATUS
+    -> FROM ATTENDENCE A
+    -> WHERE A.STU_ID=150030338 AND A.DATE='26-03-2017';
++--------+
+| STATUS |
++--------+
+| P      |
++--------+
+1 row in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+4.HOW MANY STUDENTS ARE  BEING INVOLVED IN COURSE 152001?
+ANS:
+
+mysql> SELECT COUNT(Sc.STU_ID)
+    -> FROM STUDENT S,COURSE C,STU_COURSE SC
+    -> WHERE S.STU_ID=SC.STU_ID AND C.COURSE_ID=SC.COURSE_ID AND SC.COURSE_ID=152001;
++------------------+
+| COUNT(Sc.STU_ID) |
++------------------+
+|                1 |
++------------------+
+1 row in set (0.08 sec)
+
+
+
+
+
+
+
+
+
+
+
+5.DISPLAY THE ATTENDENCE REPORT CONSISTING STU_ID,STU_NAME,STATUS,DATE IN SECTION 1?
+ANS:
+mysql> select S.STU_ID,S.STU_NAME,A.STATUS,A.DATE
+    -> FROM ATTENDENCE A INNER JOIN STUDENT S ON A.STU_ID=S.STU_ID
+    -> WHERE A.SECTION_NO=1;
++-----------+----------+--------+------------+
+| STU_ID    | STU_NAME | STATUS | DATE       |
++-----------+----------+--------+------------+
+| 150030338 | JPR      | P      | 26-03-2017 |
+| 150030336 | K.AVI    | P      | 27-03-2017 |
+| 150030333 | KVP      | P      | 27-03-2017 |
+| 150030338 | JPR      | A      | 28-03-2017 |
+| 150030336 | K.AVI    | A      | 28-03-2017 |
+| 150030333 | KVP      | P      | 28-03-2017 |
++-----------+----------+--------+------------+
+
+
+
+
+
+
+
+6.DISPLAY THE ATTENDENCE REPORT OF STUDENTS IN INCREASING ORDER OF THEIR STU_ID IRRESPECTIVE OF THEIR SECTIONS?
+ANS:
+mysql> SELECT S.STU_ID,S.STU_NAME,A.STATUS,A.DATE
+    -> FROM STUDENT S,ATTENDENCE A
+    -> WHERE S.STU_ID=A.STU_ID;
++-----------+----------+--------+------------+
+| STU_ID    | STU_NAME | STATUS | DATE       |
++-----------+----------+--------+------------+
+| 150030333 | KVP      | P      | 27-03-2017 |
+| 150030336 | K.AVI    | P      | 27-03-2017 |
+| 150030337 | JVSR     | P      | 26-03-2017 |
+| 150030338 | JPR      | P      | 26-03-2017 |
+| 150030341 | JNC      | P      | 26-03-2017 |
++-----------+----------+--------+------------+
+5 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+7.SHOW THE NUMBER OF COURSES THE STU_ID 150030338 IS TAKING?
+ANS:
+mysql> SELECT COUNT(SC.COURSE_ID)
+    -> FROM STUDENT S,COURSE C,STU_COURSE SC
+    -> WHERE S.STU_ID=SC.STU_ID AND C.COURSE_ID=SC.COURSE_ID AND SC.STU_ID;
++---------------------+
+| COUNT(SC.COURSE_ID) |
++---------------------+
+|                   5 |
++---------------------+
+1 row in set (0.01 sec)
+
+
+
+
+
+8.DISPLAY THE ATTENDENCE OF THE STUDENTS BELONGS TO SLOTNO=1?
+ANS:
+
+mysql> SELECT A.STU_ID,A.STATUS,A.DATE
+    -> FROM ATTENDENCE A INNER JOIN SECTION S ON A.SECTION_NO=S.SEC_NO
+    -> WHERE S.SEC_SLOT_NO=1;
++-----------+--------+------------+
+| STU_ID    | STATUS | DATE       |
++-----------+--------+------------+
+| 150030338 | P      | 26-03-2017 |
+| 150030337 | P      | 26-03-2017 |
+| 150030336 | P      | 27-03-2017 |
+| 150030333 | P      | 27-03-2017 |
+| 150030338 | A      | 28-03-2017 |
+| 150030337 | A      | 28-03-2017 |
+| 150030336 | A      | 28-03-2017 |
+| 150030333 | P      | 28-03-2017 |
++-----------+--------+------------+
+
+
+
+
+
+
+9.DISPLAY THE STUDENT NAMES ASSOCIATED WITH FACULTY FROM SECTIONNO=1?
+
+ANS:
+mysql> SELECT T.TEACHER_NAME,ST.STU_NAME
+    -> FROM SECTION S INNER JOIN TEACHER T ON T.SECTION_NO=S.SEC_NO INNER JOIN STUDENT ST ON ST.SECTION_NO = S.SEC_NO
+    -> WHERE S.SEC_NO=1;
++------------------+----------+
+| TEACHER_NAME     | STU_NAME |
++------------------+----------+
+| K.THIRUPATHI RAO | KVP      |
+| K.THIRUPATHI RAO | K.AVI    |
+| K.THIRUPATHI RAO | JPR      |
+| R.SEHAR          | KVP      |
+| R.SEHAR          | K.AVI    |
+| R.SEHAR          | JPR      |
+| V.HARI KIRAN     | KVP      |
+| V.HARI KIRAN     | K.AVI    |
+| V.HARI KIRAN     | JPR      |
+| RAJYA LAXMI      | KVP      |
+| RAJYA LAXMI      | K.AVI    |
+| RAJYA LAXMI      | JPR      |
+| PRASHANTH        | KVP      |
+| PRASHANTH        | K.AVI    |
+| PRASHANTH        | JPR      |
++------------------+----------+
+
+
+
+10.WHERE CAN I FIND THE STUDENT WITH NAME='JPR'?
+ANS:
+mysql> SELECT ST.STU_ID,ST.STU_NAME,R.ROOM_NO,R.FLOOR_NO,R.BLOCK_NAME,ST.SECTION_NO
+    -> FROM SECTION S INNER JOIN STUDENT ST ON S.SEC_NO=ST.SECTION_NO INNER JOIN ROOM R ON S.ROOM_NO=R.ROOM_NO
+    -> WHERE ST.STU_NAME='JPR';
++-----------+----------+---------+----------+------------+------------+
+| STU_ID    | STU_NAME | ROOM_NO | FLOOR_NO | BLOCK_NAME | SECTION_NO |
++-----------+----------+---------+----------+------------+------------+
+| 150030338 | JPR      |     407 |        4 | C          |          1 |
++-----------+----------+---------+----------+------------+------------+
+
+
+
